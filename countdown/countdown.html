@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>倒计时</title>
+    <style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+
+        font-family: Microsoft YaHei, '宋体', Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif;
+    }
+
+    body {
+        background: #000;
+
+        overflow: hidden;
+    }
+
+    #number {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        /*font-size:300px;*/
+        text-align: center;
+
+        -webkit-transform: translate3d(-50%, -50%, 0);
+        -moz-transform: translate3d(-50%, -50%, 0);
+         transform: translate3d(-50%, -50%, 0);
+    }
+
+    .number-anim {
+        -webkit-animation: animation_in 10s linear;
+        -moz-animation: animation_in 10s linear;
+        animation: animation_in 10s linear;
+    }
+
+    @keyframes animation_in {
+        0 {}
+        10% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        11% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        20% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        21% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        30% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        31% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        40% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        41% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        50% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        51% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        60% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        61% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        70% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        71% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        80% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        81% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        90% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+        91% {
+            font-size: 300px;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            -moz-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+        }
+        100% {
+            font-size: 100px;
+            -webkit-transform: translate3d(-50%, -50%, -300px);
+            -moz-transform: translate3d(-50%, -50%, -300px);
+            transform: translate3d(-50%, -50%, -300px);
+        }
+    }
+
+    .button {
+        position: absolute;
+        top:0;
+        left: 0;
+
+        border: 2px solid #DDDDDD;
+        padding: 5px;
+        margin: 10px;
+
+        font-size: 16px;
+
+        border-radius: 1px;
+
+        cursor: pointer;
+
+        z-index:999;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="number"></div>
+    <!-- <div id="number">10</div> -->
+    <button class="button">再来一次</button>
+    <audio ></audio>
+</body>
+<script type="text/javascript">
+window.onload = function() {
+
+    num = 10;
+    isCounting = true;
+    timer = null;
+    numberDiv = document.querySelector("#number");
+    audio = document.querySelector("audio");
+    button = document.querySelector(".button");
+
+    // 初始化
+    init();
+
+    // 倒计时
+    timer = setInterval(count, 1000);
+}
+
+// 初始化
+function init() {
+
+    numberDiv.innerHTML = num;
+    numberDiv.style.color =  getRandomColor();
+    numberDiv.style.fontSize = "300px";
+    numberDiv.className = "number-anim";
+    // numberDiv.classList.toggle("number-anim");
+   
+    button.addEventListener("click", function() {
+        if (isCounting) {
+            return;
+        }
+        isCounting = true;
+        num = 10;
+
+        //方式四(失败)
+        //借助其他重新渲染途径，如颜色、内容、大小的变化
+        //IE和Microsoft Edge支持，但是FF和Chrome不支持，但这也说明了Chrome和FF已经对浏览器渲染做了优化
+        // numberDiv.className = null;
+
+        numberDiv.innerHTML = num;
+        numberDiv.style.color = getRandomColor();   
+        numberDiv.style.fontSize = "300px";
+        
+        // numberDiv.className = "number-anim";
+        // timer = setInterval(count, 1000);
+        
+        //方式一(失败)
+        //直接解绑，再绑定，浏览器会在remove和add操作后重新渲染完整个元素属性
+        // numberDiv.className = null;
+        // numberDiv.className = "number-anim";
+        // timer = setInterval(count, 1000);
+
+        //方式二(成功)
+        //先解绑，再使用setTimeout使浏览器重新渲染页面，重新绑定
+        //setTimeout只是一种方式，只要能使浏览器重新渲染即可      
+        numberDiv.className = null;
+        setTimeout(function() {
+            numberDiv.className = "number-anim";
+
+            timer = setInterval(count, 1000);
+        }, 30);
+        // window.requestAnimationFrame(function(){
+        //     window.requestAnimationFrame(function(){
+        //         numberDiv.className = "number-anim";
+
+        //         timer = setInterval(count, 1000);
+        //     });
+        // });
+
+        //方式三(失败)
+        //使用classList属性
+        // var f= numberDiv.classList.toggle("number-anim");
+        // console.log("before:+"+f);
+        // f = numberDiv.classList.toggle("number-anim");
+        // console.log("after:+"+f);
+        // timer = setInterval(count, 1000);         
+    }, false);
+}
+
+// 计数倒数
+function count() {
+
+    numberDiv.innerHTML = --num;
+    numberDiv.style.color = getRandomColor();
+  
+    if (num == 0) {
+        clearInterval(timer);
+
+        audio.src="./audio/readygo.mp3";
+        audio.play();
+
+        numberDiv.innerHTML = "Ready Go!";
+        numberDiv.style.color = getRandomColor();
+        numberDiv.style.fontSize = "100px";
+
+        numberDiv.style.opacity = 0.8;
+        numberDiv.style.filter = "alpha(opacity=80)";
+        CompatibleFunc(numberDiv, "Transition", "opacity 1s");
+
+        isCounting = false;
+    }
+}
+
+// 获取随机颜色
+function getRandomColor() {
+    var arr = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+        color += arr[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+// 兼容函数
+function CompatibleFunc(elem, key, value) {
+    ["Moz", "Webkit", "Ms", "O", ""].forEach(function(prefix) {
+        elem.style[prefix + key] = value;
+    });
+    return elem;
+}
+</script>
+
+</html>
