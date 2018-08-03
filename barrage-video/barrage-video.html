@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>弹幕视频</title>
+    <style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+        border:0;
+        
+        /*JS使用offsetWidth、offsetHeight等属性建议加上*/
+        box-sizing: border-box;
+    }
+
+   body{
+        background: black;
+
+        overflow-x: hidden;
+    }
+
+    .screen-video {    
+        width:80%;
+        margin: 1rem 10%;
+        border: 1px solid white; 
+        
+        /*IE不支持*/
+        /*填充父元素的方式*/
+        object-fit: fill;      
+    }
+
+    .screen-input {
+        position: absolute;
+        left:10%;
+
+        height: 1.5rem;
+
+        line-height: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .screen-button {
+        position: absolute;
+        right: 10%;
+
+        height: 1.5rem;
+
+        line-height: 1.5rem;
+        letter-spacing: 0.2em;
+        font-size: 0.8rem;
+
+        cursor: pointer;
+    }
+
+    .barrage {
+        position: absolute;
+        left:10%;
+
+        width: 80%;
+        
+        /*x轴方向上超过则隐藏内容*/
+        overflow-x: hidden;
+
+        z-index: 999;
+    }
+
+    .barrage-span {
+        font-family: "Microsoft YaHei";
+        font-size: 1.5rem;
+        font-weight: 400;
+
+        text-shadow: rgb(0, 0, 0) 1px 0px 0px,
+        rgb(0, 0, 0) 0px 1px 0px,
+        rgb(0, 0, 0) -1px 0px 0px,
+        rgb(0, 0, 0) 0px -1px 0px;
+
+        /*解决文字换行问题*/
+        white-space: nowrap;
+
+        cursor: pointer;
+        
+        /*用于定位*/
+        position: absolute;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="screen">
+        <video class="screen-video" autoplay loop>
+            <!-- 视频源尽量使用MP4格式，视频采用H.264编码，音频采用MP3编码[推荐]或ACC编码 -->
+            <!-- IE9及以上才支持MP4和WEBM格式，不支持OGG格式-->
+            <!-- 当视频在IE和FF播放不了，需要使用ffmpeg软件进行视频文件的转码-->
+            <source src="./video/happy.mp4" type="video/mp4">
+            <!-- <source src="./video/happy.ogg" type="video/ogg"> -->
+            <!-- <source src="./video/happy.webm" type="video/webm"> -->
+            您的浏览器不支持 video 标签。
+        </video>
+        <input type="text" class="screen-input">
+        <input type="button" value="发送" class="screen-button" onclick="send()">
+    </div>
+    <div class="barrage"></div>
+</body>
+<script type="text/javascript">
+//全局对象
+var video = document.querySelector(".screen-video");
+var content = document.querySelector(".screen-input");
+var btn_send = document.querySelector(".screen-button");
+var barrage = document.querySelector(".barrage");
+
+var doc = document.documentElement;
+var html = document.querySelector("html");
+
+var str = "0123456789ABCDEF";
+
+//不推荐通过以下方式获取值，存在兼容性问题，除了获取上的兼容，且在IE和FF不支持margin，只支持marginTop等
+//简单说，能不通过BOM操作的尽量不用
+// var sstyle = screen.currentStyle||window.getComputedStyle(screen);
+// var vstyle = video.currentStyle||window.getComputedStyle(video);
+
+//设置监听
+window.addEventListener("load",init,false);
+window.addEventListener("resize",init,false);
+// btn_send.addEventListener("click",send,false);
+content.addEventListener("keyup",function(event) {
+    var e = event||window.event;
+    // console.log(e);
+    // console.log(e.which);
+    // console.log(e.keyCode);
+    if (e.which == "13"|| e.keyCode =="13") {
+        send();
+    }
+},false);
+
+//初始化
+function init(){
+    // 字体初始化,必须先确定根字体大小，因为后续一些依赖根字体大小 
+    // 浏览器默认字体大小是16px，最小字体是12px
+    html.style.fontSize = parseInt(doc.clientWidth /45)+"px";
+    if(parseInt(html.style.fontSize)<12){
+        html.style.fontSize = "12px";
+    }
+    // console.log(html.style.fontSize);
+
+    //样式初始化 
+    //设置video的高度
+    video.style.height =  parseInt(video.offsetWidth/16*9)+"px";
+    // console.log("video:"+video.offsetTop+":"+video.offsetHeight);
+    //设置input的位置
+    content.style.width = parseInt(video.offsetWidth - btn_send.offsetWidth)+"px";
+    content.style.top = (video.offsetHeight + video.offsetTop*2)+"px";
+    //设置button的位置
+    btn_send.style.top = (video.offsetHeight + video.offsetTop *2)+"px";//建议用这种方式，使JS不需关注CSS是否应用了该样式
+    //设置barrage的位置
+    barrage.style.top =video.offsetTop +"px";
+    barrage.style.height = video.offsetHeight +"px"; 
+    // console.log("barrage:"+barrage.offsetTop+":"+barrage.offsetHeight);
+}
+
+//发送弹幕内容
+function send() {
+    //发送内容
+    var val = trim(content.value);
+    //创建的节点
+    var span;
+    //偏移量
+    var offset = 0;
+    //帧ID
+    var id;
+    if (val != "") {
+        //创建节点
+        span = document.createElement("span");
+        //设置文本
+        span.innerHTML = val;
+        //设置样式
+        span.className = "barrage-span";
+        //添加
+        barrage.appendChild(span);
+        //设置初始位置，注意添加元素后宽度和高度才生效。
+        // console.log(span.offsetHeight);
+        span.style.top = getRandomNumber(parseInt(video.offsetHeight-span.offsetHeight)) + "px";
+        span.style.left =  video.offsetWidth+"px";
+        span.style.color = getRandomColor();
+        //设置监听事件
+        span.addEventListener("mouseover", stop, false);
+        span.addEventListener("mouseout", scroll, false);
+        //默认初始文本滚动
+        scroll();
+    }
+    content.value = "";
+    
+    function scroll() {
+
+        offset += 2;
+
+        span.style.transform = "translateX(-" + offset + "px)";
+        span.style.transition = "transform 0s linear";
+
+        if (offset >= parseInt(video.offsetWidth+span.offsetWidth)) {
+            stop();
+            barrage.removeChild(span);
+        }else{    
+            id = window.requestAnimationFrame(scroll);
+        }  
+    }
+
+    function stop(){
+        window.cancelAnimationFrame(id);
+    }
+
+    //去除两边空格
+    function trim(s) {
+        return s.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+    //指定范围内获取随机数
+    function getRandomNumber(value) {
+        return parseInt(Math.random() * value);
+    }
+
+    //获取任意颜色
+    function getRandomColor() {
+        var color = "#";
+        var j;
+        for (var i = 0; i < 6; i++) {
+            j = getRandomNumber(16);
+            color += str.substring(j, j + 1);
+        }
+        return color;
+    }
+}
+</script>
+</html>
