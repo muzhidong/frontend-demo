@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>碰撞球</title>
+    <style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        background: #000;
+    }
+    #mcanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+    </style>
+</head>
+<body>
+    <canvas id="mcanvas" width="1000" height="400"></canvas>
+</body>
+<script type="text/javascript">
+window.addEventListener("load",function(){
+    //1.获取画布节点对象
+    var mcanvas = document.querySelector("#mcanvas");
+    //2.获取画布上下文对象
+    var context = mcanvas.getContext("2d");
+    //定义相关变量
+    var x = 0,
+        y = 0,
+        lastX = 0,
+        lastY = 0,
+        left = false,
+        right = false,
+        lineLength = Math.sqrt(Math.pow(200, 2) + Math.pow(30, 2)),
+        startY = 0,
+        endY = 0,
+        isLeft = false,
+        isFirst = false;
+    //3.为画布初始化
+    init();
+    //4.为画布添加监听
+    mcanvas.addEventListener("mousemove", moveBallAndLine, false);
+    mcanvas.addEventListener("click", start, false);
+
+    //初始化
+    function init(isLeft, isRight) {
+        draw3DBall(context, 500, 100);
+
+        draw3DBall(context, 490, 300);
+        drawLine(context, 500, 100, 490, 300);
+
+        draw3DBall(context, 510, 300);
+        drawLine(context, 500, 100, 510, 300);
+
+        draw3DBall(context, 470, 300);
+        drawLine(context, 500, 100, 470, 300);
+
+        draw3DBall(context, 530, 300);
+        drawLine(context, 500, 100, 530, 300);
+    }
+
+    //重新初始化
+    function reinit(isLeft, isRight) {
+        draw3DBall(context, 500, 100);
+
+        draw3DBall(context, 500, 300);
+        drawLine(context, 500, 100, 500, 300);
+
+        draw3DBall(context, 480, 300);
+        drawLine(context, 500, 100, 480, 300);
+
+        draw3DBall(context, 520, 300);
+        drawLine(context, 500, 100, 520, 300);
+    }
+
+    //移动球和线的位置
+    function moveBallAndLine(event) {
+        //球和线随着鼠标移动在指定轨道移动
+        x = getX(event);
+        y = getY(event);
+        if (x < 500 && y <= 300) {
+            right = false;
+            left = true;
+            //清除画布并重绘画布的其他内容了
+            context.clearRect(0, 0, 1000, 400);
+            reinit();
+            //重绘球和线
+            if (y <= 100) {
+                draw3DBall(context, 500 - lineLength, 100);
+                drawLine(context, 500, 100, 500 - lineLength, 100);
+                lastY = 100;
+                lastX = 500 - lineLength;
+            } else {
+                x = 500 - Math.sqrt(Math.pow(lineLength, 2) - Math.pow(y - 100, 2));
+                draw3DBall(context, x, y);
+                drawLine(context, 500, 100, x, y);
+                lastX = x;
+                lastY = y;
+            }
+        } else if (x > 500 && y <= 300) {
+            left = false;
+            right = true;
+            //清除画布并重绘画布的其他内容了
+            context.clearRect(0, 0, 1000, 400);
+            reinit();
+            //重绘球和线
+            if (y <= 100) {
+                draw3DBall(context, 500 + lineLength, 100);
+                drawLine(context, 500, 100, 500 + lineLength, 100);
+                lastY = 100;
+                lastX = 500 + lineLength;
+            } else {
+                x = 500 + Math.sqrt(Math.pow(lineLength, 2) - Math.pow(y - 100, 2));
+                draw3DBall(context, x, y);
+                drawLine(context, 500, 100, x, y);
+                lastX = x;
+                lastY = y;
+            }
+        }
+    }
+
+    //开始摆动
+    function start(event) {
+        //当释放球时，回到原处。之后另一边的球跃起到释放球相同的高度,两边的球左右碰撞数次。
+        mcanvas.removeEventListener("mousemove", moveBallAndLine, false);
+        if (left) {
+            //左落右升右落左升
+            startY = lastY;
+            isLeft = true;
+            back();
+        }
+        if (right) {
+            //右落左升左落右升
+            startY = lastY;
+            isLeft = false;
+            back();
+        }
+        //恢复初始化
+        left = true;
+        right = true;
+        lastX = 0;
+    }
+
+    //回升
+    function go() {
+        if (startY <= endY) {
+            lastY += 5; //损失的重力势能
+            if (lastY >= 300) {
+                lastY = 0;
+                startY = 0;
+                endY = 0;
+                isLeft = false;
+                isFirst = false;
+                context.clearRect(0, 0, 1000, 400);
+                init();
+                mcanvas.addEventListener("mousemove", moveBallAndLine, false);
+                return;
+            } else {
+                startY = lastY;
+                isFirst = true;
+
+                //不存在兼容问题，直接requestAnimationFrame即可   
+                if ("requestAnimationFrame" in window) {
+                    id = requestAnimationFrame(back);
+                } else if ("webkitRequestAnimationFrame" in window) {
+                    id = webkitRequestAnimationFrame(back);
+                } else if ("mozRequestAnimationFrame" in window) {
+                    id = mozRequestAnimationFrame(back);
+                } else if ("msRequestAnimationFrame" in window) {
+                    id = msRequestAnimationFrame(back);
+                }
+
+            }
+        } else {
+
+            //重置球和线的位置
+            startY = startY - 2; //每帧变化2
+            if (isLeft)
+                x = 500 - Math.sqrt(Math.pow(lineLength, 2) - Math.pow(startY - 100, 2));
+            else
+                x = 500 + Math.sqrt(Math.pow(lineLength, 2) - Math.pow(startY - 100, 2));
+            //重绘
+            context.clearRect(0, 0, 1000, 400);
+            reinit();
+            draw3DBall(context, x, startY);
+            drawLine(context, 500, 100, x, startY);
+
+
+            if ("requestAnimationFrame" in window) {
+                id = requestAnimationFrame(go);
+            } else if ("webkitRequestAnimationFrame" in window) {
+                id = webkitRequestAnimationFrame(go);
+            } else if ("mozRequestAnimationFrame" in window) {
+                id = mozRequestAnimationFrame(go);
+            } else if ("msRequestAnimationFrame" in window) {
+                id = msRequestAnimationFrame(go);
+            }
+        }
+
+    }
+
+    //下落
+    function back() {
+        if (startY >= 300) {
+            lastY += 5; //损失的重力势能 
+            //重绘回最初始状态，若为停止则是起到过渡效果，若是停止则回到最初始状态
+            context.clearRect(0, 0, 1000, 400);
+            init();
+            if (lastY >= 300) {
+                lastY = 0;
+                startY = 0;
+                endY = 0;
+                isLeft = false;
+                mcanvas.addEventListener("mousemove", moveBallAndLine, false);
+                return;
+            } else {
+                startY = 300;
+                endY = lastY;
+                isLeft = !isLeft;
+                setTimeout(function() {
+                    if ("requestAnimationFrame" in window) {
+                        id = requestAnimationFrame(go);
+                    } else if ("webkitRequestAnimationFrame" in window) {
+                        id = webkitRequestAnimationFrame(go);
+                    } else if ("mozRequestAnimationFrame" in window) {
+                        id = mozRequestAnimationFrame(go);
+                    } else if ("msRequestAnimationFrame" in window) {
+                        id = msRequestAnimationFrame(go);
+                    }
+                }, 100);
+            }
+        } else {
+            //重置球和线的位置
+            startY = startY + 2; //每帧变化2
+            if (isLeft)
+                x = 500 - Math.sqrt(Math.pow(lineLength, 2) - Math.pow(startY - 100, 2));
+            else
+                x = 500 + Math.sqrt(Math.pow(lineLength, 2) - Math.pow(startY - 100, 2));
+            //重绘
+            context.clearRect(0, 0, 1000, 400);
+            reinit();
+            draw3DBall(context, x, startY);
+            drawLine(context, 500, 100, x, startY);
+
+            if ("requestAnimationFrame" in window) {
+                id = requestAnimationFrame(back);
+            } else if ("webkitRequestAnimationFrame" in window) {
+                id = webkitRequestAnimationFrame(back);
+            } else if ("mozRequestAnimationFrame" in window) {
+                id = mozRequestAnimationFrame(back);
+            } else if ("msRequestAnimationFrame" in window) {
+                id = msRequestAnimationFrame(back);
+            }
+        }
+    }
+
+    //获取鼠标x
+    function getX(event) {
+        var x = 0;
+        if (event.layerX || event.layerX == 0) {
+            x = event.layerX;
+        } else if (event.offsetX || event.offsetX == 0) { // Opera
+            x = event.offsetX;
+        }
+        return x;
+    }
+
+    //获取鼠标y
+    function getY(event) {
+        var y = 0;
+        if (event.layerY || event.layerY == 0) {
+            y = event.layerY;
+        } else if (event.offsetY || event.offsetY == 0) { // Opera
+            y = event.offsetY;
+        }
+        return y;
+    }
+
+    //画线
+    function drawLine(context, x0, y0, x1, y1, color) {
+        context.save();
+
+        context.beginPath();
+
+        if (color == null) {
+            context.strokeStyle = "#A7AEB0";
+        } else {
+            context.strokeStyle = color;
+        }
+        context.moveTo(x0, y0);
+        context.lineTo(x1, y1);
+        context.stroke();
+
+        context.closePath();
+
+        context.restore();
+    }
+
+    //画球
+    function draw3DBall(context, x0, y0, c0, c1) {
+        context.save();
+
+        context.beginPath();
+
+        context.translate(x0, y0);
+
+        var gradient = context.createRadialGradient(3, 3, 0, 0, 0, 10);
+        if (c0 == null) {
+            gradient.addColorStop(0, "#eee");
+        } else {
+            gradient.addColorStop(0, c0);
+        }
+        if (c1 == null) {
+            gradient.addColorStop(1, "#57BADA");
+        } else {
+            gradient.addColorStop(0, c1);
+        }
+        context.fillStyle = gradient;
+        context.arc(0, 0, 10, 0, 2 * Math.PI);
+        context.fill();
+
+        context.closePath();
+
+        context.restore();
+    }
+
+},false);
+</script>
+</html>
