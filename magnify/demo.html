@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>旗帜</title>
+    <style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        background: #000;
+    }
+    #mcanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+    </style>
+</head>
+<body>
+    <canvas width="1000" height="500" id="mcanvas"></canvas>
+</body>
+<script type="text/javascript">
+
+    var mcanvas = document.querySelector("#mcanvas");
+    var con = mcanvas.getContext("2d");
+
+    var x0 = 200,
+        y0 = 100,
+        x1 = 800,
+        y1 = 400,
+        offsetX = 0;
+
+    //画旗帜
+    function drawFlag(x0, y0, x1, y1, offsetX) {
+
+        con.beginPath();
+
+        con.moveTo(x0, y0 + 50 * Math.sin(offsetX * Math.PI * 2 / (x1 - x0)));
+        for (var i = 1; i <= x1 - x0; i++) {
+            con.lineTo(x0 + i, y0 + 50 * Math.sin((offsetX + i) * Math.PI * 2 / (x1 - x0)));
+        }
+        con.lineTo(x1, y1 + 50 * Math.sin(offsetX * Math.PI * 2 / (x1 - x0)));
+        for (var j = 1; j <= x1 - x0; j++) {
+            con.lineTo(x1 - j, y1 + 50 * Math.sin((offsetX + x1 - x0 - j) * Math.PI * 2 / (x1 - x0)));
+        }
+        con.lineTo(x0, y0 + 50 * Math.sin(offsetX * Math.PI * 2 / (x1 - x0)));
+
+        con.closePath();
+
+        con.fillStyle = "#1890ff";
+        con.fill();
+    }
+
+     drawFlag(x0, y0, x1, y1, offsetX);
+
+</script>
+<script src="html2canvas.min.js"></script>
+<script src="magnify.js"></script>
+</html>
